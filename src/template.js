@@ -115,6 +115,9 @@ class Template {
     // Creates rule Json file
     addRuleTemplate(rule, ruleCounter) {
 	let ruleName = rule.name;
+	// This is to solve an issue with there are rules with same name but different case.
+	// All names to lower case!
+	ruleName = ruleName.toLowerCase();
 	logger.info(`looking at rule: ${ruleName}`);
 	let includeName = this.converterData.ruleMapping[ruleName];
 	if (!includeName) {
