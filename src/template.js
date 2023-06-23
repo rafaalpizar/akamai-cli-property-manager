@@ -107,49 +107,43 @@ class Template {
      * @param ruleName
      */
     static findIncludeNameFor(ruleName) {
-        let includeName = ruleName.replace(/[\s/;,|&:]+/g, '_');
+        let includeName = ruleName.replace(/[\s/;,|&:\*\+\(\)\=]+/g, '_');
         includeName = includeName.replace(/(^\.)|(\.$)/g, '');
         return includeName + ".json";
     }
 
-    processRule(rule, ruleCounter, i) {
+    // Creates rule Json file
+    addRuleTemplate(rule, ruleCounter) {
+	let ruleName = rule.name;
+	logger.info(`looking at rule: ${ruleName}`);
+	let includeName = this.converterData.ruleMapping[ruleName];
+	if (!includeName) {
+	    includeName = Template.findIncludeNameFor(ruleName);
+	}
+	let count = ruleCounter[includeName];
+	if (count === undefined) {
+	    ruleCounter[includeName] = 1;
+	} else {
+	    count++;
+	    ruleCounter[includeName] = count;
+	    includeName = includeName.slice(0, includeName.length - 5) + "_" + count + ".json"
+	}
+        this.templates[includeName] = rule;
+	return includeName;
+    }
+    
+    processRule(rule, ruleCounter) {
 	let includeJson = "no template"
         let childRules = rule.children;
         if (childRules.length === 0) {
-            let ruleName = rule.name;
-            logger.info(`looking at rule: ${ruleName}`);
-            let includeName = this.converterData.ruleMapping[ruleName];
-            if (!includeName) {
-                includeName = Template.findIncludeNameFor(ruleName);
-            }
-            let count = ruleCounter[includeName];
-            if (count === undefined) {
-                ruleCounter[includeName] = 1;
-            } else {
-                count++;
-                ruleCounter[includeName] = count;
-                includeName = includeName.slice(0, includeName.length - 5) + "_" + count + ".json"
-            }
-            this.templates[includeName] = rule;
-	    console.log("Final include:" + includeName);
+	    // this is the deepest rule in the tree
+	    // just return rule object to caller
+	    console.log("Final include:" + rule.name);
         } else {
             for (let i = 0; i < childRules.length; i++) {
-                let includeRule = this.processRule(childRules[i], ruleCounter, i);
-		let ruleName = includeRule.name;
-		logger.info(`looking at rule: ${ruleName}`);
-		let includeName = this.converterData.ruleMapping[ruleName];
-		if (!includeName) {
-		    includeName = Template.findIncludeNameFor(ruleName);
-		}
-		let count = ruleCounter[includeName];
-		if (count === undefined) {
-		    ruleCounter[includeName] = 1;
-		} else {
-		    count++;
-		    ruleCounter[includeName] = count;
-		    includeName = includeName.slice(0, includeName.length - 5) + "_" + count + ".json"
-		}
-		this.templates[includeName] = includeRule;
+		// modify a rule object with references to json files
+                let includeRule = this.processRule(childRules[i], ruleCounter);
+		let includeName = this.addRuleTemplate(includeRule,ruleCounter);
 		childRules[i] = "#include:" + includeName;
 		console.log("Parent include:" + includeName);
             }
@@ -162,24 +156,9 @@ class Template {
 	let ruleCounter = {};
         for (let i = 0; i < childRules.length; i++) {
             let includeRule = this.processRule(childRules[i], ruleCounter, i)
-	    let ruleName = includeRule.name;
-	    logger.info(`looking at rule: ${ruleName}`);
-	    let includeName = this.converterData.ruleMapping[ruleName];
-	    if (!includeName) {
-		includeName = Template.findIncludeNameFor(ruleName);
-	    }
-	    let count = ruleCounter[includeName];
-	    if (count === undefined) {
-		ruleCounter[includeName] = 1;
-	    } else {
-		count++;
-		ruleCounter[includeName] = count;
-		includeName = includeName.slice(0, includeName.length - 5) + "_" + count + ".json"
-	    }
-	    this.templates[includeName] = includeRule;
+	    let includeName = this.addRuleTemplate(includeRule,ruleCounter);
 	    childRules[i] = "#include:" + includeName;
 	    console.log("Main include:" + includeName);
-	    //childRules[i] = includeRule;
         }
     }
 
