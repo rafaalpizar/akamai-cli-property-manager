@@ -138,27 +138,28 @@ class Template {
         if (childRules.length === 0) {
 	    // this is the deepest rule in the tree
 	    // just return rule object to caller
-	    console.log("Final include:" + rule.name);
+	    logger.info("Last child include:" + rule.name);
         } else {
             for (let i = 0; i < childRules.length; i++) {
 		// modify a rule object with references to json files
                 let includeRule = this.processRule(childRules[i], ruleCounter);
 		let includeName = this.addRuleTemplate(includeRule,ruleCounter);
 		childRules[i] = "#include:" + includeName;
-		console.log("Parent include:" + includeName);
+		logger.info("Child include:" + includeName);
             }
         }
 	return rule
     }
 
     processRules() {
+	// this updates main.json file
         let childRules = this.pmData.rules.children;
 	let ruleCounter = {};
         for (let i = 0; i < childRules.length; i++) {
             let includeRule = this.processRule(childRules[i], ruleCounter, i)
 	    let includeName = this.addRuleTemplate(includeRule,ruleCounter);
 	    childRules[i] = "#include:" + includeName;
-	    console.log("Main include:" + includeName);
+	    logger.info("Main include:" + includeName);
         }
     }
 
