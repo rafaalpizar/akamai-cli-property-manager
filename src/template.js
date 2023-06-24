@@ -107,7 +107,7 @@ class Template {
      * @param ruleName
      */
     static findIncludeNameFor(ruleName) {
-        let includeName = ruleName.replace(/[\s/;,|&:\*\+\(\)\=]+/g, '_');
+        let includeName = ruleName.replace(/[\s/;,|&:\*\+\(\)\=\-]+/g, '_');
         includeName = includeName.replace(/(^\.)|(\.$)/g, '');
         return includeName + ".json";
     }
@@ -129,7 +129,7 @@ class Template {
 	} else {
 	    count++;
 	    ruleCounter[includeName] = count;
-	    includeName = includeName.slice(0, includeName.length - 5) + "_" + count + ".json"
+	    includeName = includeName.slice(0, includeName.length - 5) + "-" + count + ".json"
 	}
         this.templates[includeName] = rule;
 	return includeName;
