@@ -158,7 +158,7 @@ class Template {
         let childRules = this.pmData.rules.children;
 	let ruleCounter = {};
         for (let i = 0; i < childRules.length; i++) {
-            let includeRule = this.processRule(childRules[i], ruleCounter, i)
+            let includeRule = this.processRule(childRules[i], ruleCounter)
 	    let includeName = this.addRuleTemplate(includeRule,ruleCounter);
 	    childRules[i] = "#include:" + includeName;
 	    logger.info("Main include:" + includeName);
