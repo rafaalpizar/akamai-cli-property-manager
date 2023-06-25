@@ -136,7 +136,6 @@ class Template {
     }
     
     processRule(rule, ruleCounter) {
-	let includeJson = "no template"
         let childRules = rule.children;
         if (childRules.length === 0) {
 	    // this is the deepest rule in the tree
