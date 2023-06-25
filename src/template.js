@@ -145,7 +145,7 @@ class Template {
             for (let i = 0; i < childRules.length; i++) {
 		// modify a rule object with references to json files
                 let includeRule = this.processRule(childRules[i], ruleCounter);
-		let includeName = this.addRuleTemplate(includeRule,ruleCounter);
+		let includeName = this.addRuleTemplate(includeRule, ruleCounter);
 		childRules[i] = "#include:" + includeName;
 		logger.info("Child include:" + includeName);
             }
@@ -159,7 +159,7 @@ class Template {
 	let ruleCounter = {};
         for (let i = 0; i < childRules.length; i++) {
             let includeRule = this.processRule(childRules[i], ruleCounter)
-	    let includeName = this.addRuleTemplate(includeRule,ruleCounter);
+	    let includeName = this.addRuleTemplate(includeRule, ruleCounter);
 	    childRules[i] = "#include:" + includeName;
 	    logger.info("Main include:" + includeName);
         }
